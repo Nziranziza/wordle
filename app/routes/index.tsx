@@ -11,8 +11,10 @@ import {
 } from '@mui/material';
 
 import { dictionary } from '../data';
+import styles from '~/styles/index.css';
 
 const name = 'WORDLE GAME';
+const GAP = 0.5;
 
 const getRandomWord = (): string => {
   const index = Math.floor(Math.random() * dictionary.length);
@@ -38,13 +40,7 @@ const SmartChip: FunctionComponent<SmartChipProps> = ({
 
   return (
     <Chip
-      style={{
-        width: '64px',
-        height: '64px',
-        textTransform: 'uppercase',
-        fontSize: '18px',
-        fontWeight: 'bold',
-      }}
+      className="chip"
       size='medium'
       label={label}
       color={color}
@@ -61,7 +57,6 @@ export default function Index() {
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState(false);
   const [todayWord, setWord] = useState(getRandomWord());
-  console.log(todayWord)
 
   const onKeyPress = (key: string) => {
     const currentBoardRow = board[currentGuess];
@@ -128,7 +123,7 @@ export default function Index() {
 
   return (
     <>
-      <Container maxWidth='xs'>
+      <Container maxWidth='xs' className="title">
         <Box
           display='flex'
           flexDirection='column'
@@ -155,6 +150,7 @@ export default function Index() {
             columnSpacing={1}
             rowSpacing={1}
             justifyContent='center'
+            columns={5}
           >
             {board.map((column, colIndex) =>
               column.map((row, rowIndex) => (
@@ -170,20 +166,14 @@ export default function Index() {
           </Grid>
         </Box>
       </Container>
-      <Container maxWidth='sm'>
-        <Box mt={5} display='flex' gap={1} flexDirection='column'>
-          <Box display='flex' gap={1}>
+      <Container maxWidth='sm' className="keyboard">
+        <Box mt={5} display='flex' gap={GAP} flexDirection='column'>
+          <Box display='flex' gap={GAP}>
             {keyboard[0].split('').map((c) => (
               <Button
                 color='secondary'
                 variant='contained'
-                style={{
-                  minHeight: '46px',
-                  minWidth: 'unset',
-                  flex: 1,
-                  fontSize: '16px',
-                  fontWeight: '600',
-                }}
+                className="keyboard-btn"
                 key={c}
                 onClick={() => onKeyPress(c)}
                 disabled={gameOver}
@@ -192,18 +182,12 @@ export default function Index() {
               </Button>
             ))}
           </Box>
-          <Box display='flex' gap={1}>
+          <Box display='flex' gap={GAP}>
             {keyboard[1].split('').map((c) => (
               <Button
                 color='secondary'
                 variant='contained'
-                style={{
-                  minHeight: '46px',
-                  minWidth: 'unset',
-                  flex: 1,
-                  fontSize: '16px',
-                  fontWeight: '600',
-                }}
+                className="keyboard-btn"
                 key={c}
                 onClick={() => onKeyPress(c)}
                 disabled={gameOver}
@@ -212,9 +196,9 @@ export default function Index() {
               </Button>
             ))}
           </Box>
-          <Box display='flex' gap={1}>
+          <Box display='flex' gap={GAP}>
             <Button
-              style={{ flex: 3, fontSize: '16px', fontWeight: '600' }}
+              className="keyboard-btn flex-3"
               variant='contained'
               color='secondary'
               onClick={onBackSpace}
@@ -225,13 +209,7 @@ export default function Index() {
               <Button
                 color='secondary'
                 variant='contained'
-                style={{
-                  minHeight: '46px',
-                  minWidth: 'unset',
-                  flex: 1,
-                  fontSize: '16px',
-                  fontWeight: '600',
-                }}
+                className="keyboard-btn"
                 key={c}
                 onClick={() => onKeyPress(c)}
                 disabled={gameOver}
@@ -240,7 +218,7 @@ export default function Index() {
               </Button>
             ))}
             <Button
-              style={{ flex: 3, fontSize: '16px', fontWeight: '600' }}
+              className="keyboard-btn flex-3"
               variant='contained'
               color='secondary'
               onClick={onEnter}
@@ -258,4 +236,8 @@ export default function Index() {
       </Dialog>
     </>
   );
+}
+
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
 }

@@ -1,0 +1,41 @@
+.chip {
+  width: 64px;
+  height: 64px !important;
+  text-transform: uppercase;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  border-radius: 8px !important;
+}
+.keyboard-btn {
+  min-height: 46px;
+  min-width: unset !important;
+  flex: 1;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+.flex-3 {
+  flex: 3
+}
+
+@media screen and (max-width:480px) {
+  .chip {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .keyboard-btn {
+    padding: unset !important;
+  }
+  .flex-3 {
+    flex: 2
+  }
+  .keyboard {
+    padding: 5px !important;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+  }
+  .title {
+    padding: 0 !important;
+  }
+}

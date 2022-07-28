@@ -6,6 +6,12 @@
   font-weight: bold !important;
   border-radius: 8px !important;
 }
+
+.chip.MuiChip-sizeSmall {
+  width: 45px !important;
+  height: 45px !important;
+}
+
 .keyboard-btn {
   min-height: 46px;
   min-width: unset !important;

@@ -45,3 +45,13 @@
     padding: 0 !important;
   }
 }
+
+@media screen and (max-height: 700px) {
+  .chip {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  .board {
+    max-width: 300px;
+  }
+}

@@ -133,7 +133,7 @@ export default function Index() {
    */
   const onEnter = () => {
     const currentBoardRow = board[currentGuess];
-    if (!isWordInDictionary(currentBoardRow.join())) {
+    if (!isWordInDictionary(currentBoardRow.join(''))) {
       setMessage('Word not found');
       return;
     }
@@ -275,6 +275,7 @@ export default function Index() {
             rowSpacing={1}
             justifyContent='center'
             columns={5}
+            className="board"
           >
             {board.map((column, colIndex) =>
               column.map((row, rowIndex) => {

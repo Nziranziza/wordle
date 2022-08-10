@@ -11,6 +11,11 @@
   width: 45px !important;
   height: 45px !important;
 }
+.MuiChip-sizeSmaller {
+  border-radius: 8px !important;
+  width: 36px !important;
+  height: 36px !important;
+}
 
 .keyboard-btn {
   min-height: 46px;
@@ -39,7 +44,7 @@
     position: fixed;
     width: 100%;
     left: 0;
-    bottom: 0;
+    bottom: 10px;
   }
   .title {
     padding: 0 !important;

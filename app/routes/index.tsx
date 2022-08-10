@@ -22,8 +22,12 @@ import { dictionary } from '../data';
 import styles from '~/styles/index.css';
 
 /**
- * TODO:
- * 1. Add instruction
+ * TODO: 
+ * 1. Fix Physical keyboard escape press on dialog show
+ * 2. Show the word on game over
+ * 3. Add a close button to the dialog
+ * 4. Adjust the vibration
+ * 5. Optimize keyboard on mobile
  */
 
 const name = 'WORDLE GAME';
@@ -91,7 +95,8 @@ export default function Index() {
    * 1. If a row is full, then skip it(user must press enter to go to next row)
    * 2. If a row is not full, then add the key to the row
    */
-  const onKeyPress = (key: string) => {
+  const onKeyPress = useCallback((key: string) => {
+    window.navigator.vibrate(150);
     const currentBoardRow = board[currentGuess];
     if (!currentBoardRow.filter((c) => !c).length) {
       return;
@@ -102,13 +107,13 @@ export default function Index() {
         index === currentGuess ? currentBoardRow : row
       )
     );
-  };
+  }, [currentGuess, board]);
 
   /**
    * @description: Handle backspace key press
    * Remove last character from current row
    */
-  const onBackSpace = () => {
+  const onBackSpace = useCallback(() => {
     const currentBoardRow = board[currentGuess];
     currentBoardRow[currentBoardRow.filter((c) => c).length - 1] = null;
     setBoard((board) =>
@@ -116,7 +121,7 @@ export default function Index() {
         index === currentGuess ? currentBoardRow : row
       )
     );
-  };
+  }, [currentGuess, board]);
 
   /**
    * Check if a word is in the dictionary
@@ -131,7 +136,7 @@ export default function Index() {
    * 2. If current guess is same as today word, set isWinner to true and set gameOver to true
    * 3. If current guess is the last row, check if it is the last row of the board
    */
-  const onEnter = () => {
+  const onEnter = useCallback(() => {
     const currentBoardRow = board[currentGuess];
     if (!isWordInDictionary(currentBoardRow.join(''))) {
       setMessage('Word not found');
@@ -150,7 +155,7 @@ export default function Index() {
       setWinner(false);
       setMessage('You lost!');
     }
-  };
+  }, [board, currentGuess, todayWord]);
 
   /**
    * @description: This function checks if the character is contained in today word
@@ -210,11 +215,11 @@ export default function Index() {
             ...keys,
             [character]:
               keys[character] === 'success' ||
-              isExact(character, characterIndex)
+                isExact(character, characterIndex)
                 ? 'success'
                 : doesItExist(character)
-                ? 'warning'
-                : 'error',
+                  ? 'warning'
+                  : 'error',
           };
         });
       }
@@ -224,9 +229,32 @@ export default function Index() {
     }
   }, [board, currentGuess, isExact, doesItExist]);
 
-  const onContinue = () => {
+  const onContinue = useCallback(() => {
     setMessage('');
-  };
+  }, []);
+
+  const handlePhysicalKeyboardPress = useCallback(({ key }: KeyboardEvent) => {
+    console.log(key)
+    if (key === 'Backspace') {
+      onBackSpace();
+    } else if (key === 'Enter') {
+      onEnter();
+    } else if (key === 'Escape') {
+      onContinue();
+    } else if (key === 'Delete') {
+      onBackSpace();
+    } else {
+      const keys: string = keyboard.join('');
+      if (keys.includes(key)) {
+        onKeyPress(key);
+      }
+    }
+  }, [keyboard, onBackSpace, onEnter, onContinue, onKeyPress]);
+
+  useEffect(() => {
+    window.document.addEventListener('keydown', handlePhysicalKeyboardPress);
+    return () => window.document.removeEventListener('keydown', handlePhysicalKeyboardPress);
+  }, [handlePhysicalKeyboardPress])
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -239,6 +267,8 @@ export default function Index() {
   const open = Boolean(anchorEl);
   const id = open ? 'popover' : undefined;
   const example = 'world';
+  const closeExample = 'lower';
+  const successExample = 'lowed';
 
   return (
     <ThemeProvider theme={theme}>
@@ -353,7 +383,7 @@ export default function Index() {
           </Box>
         </Box>
       </Container>
-      <Dialog open={Boolean(message)}>
+      <Dialog open={Boolean(message)} disableEscapeKeyDown={false}>
         <Box
           p={5}
           display='flex'
@@ -394,23 +424,58 @@ export default function Index() {
             rowSpacing={1}
             columns={5}
             mt={1}
+            justifyContent="center"
           >
             {example.split('').map((c, index) => (
               <Grid key={index} item>
-                <SmartChip size="small" label={c} submitted exist={index % 3 === 0} exact={index % 3 === 1}/>
+                <SmartChip size="small" label={c} submitted exist={index % 3 === 0} exact={index % 3 === 1} />
               </Grid>
             ))}
           </Grid>
-          <Box pt={4} display="flex">
-            <Chip label="R" color="error" /><Typography pl={1}>is not in the target word</Typography>
+          <Box mt={4} p={2} sx={{ bgcolor: 'text.disabled', borderRadius: 4 }}>
+            <Box display="flex" alignItems="center">
+              <Chip label="R" color="error" className="MuiChip-sizeSmaller" /><Typography color="primary.contrastText" pl={1}>is not in the target word</Typography>
+            </Box>
+            <Box pt={2} display="flex" alignItems="center">
+              <Chip className="MuiChip-sizeSmaller" label="W" color="warning" /><Typography color="primary.contrastText" px={1}>and</Typography>
+              <Chip className="MuiChip-sizeSmaller" label="L" color="warning" /><Typography color="primary.contrastText" pl={1}>are in the word but the wrong spot</Typography>
+            </Box>
+            <Box pt={2} display="flex" alignItems="center">
+              <Chip className="MuiChip-sizeSmaller" label="E" color="success" /><Typography color="primary.contrastText" px={1}>and</Typography>
+              <Chip className="MuiChip-sizeSmaller" label="0" color="success" /><Typography color="primary.contrastText" pl={1}>are in the word and the right spot</Typography>
+            </Box>
           </Box>
-          <Box pt={2} display="flex">
-            <Chip label="W" color="warning" /><Typography px={1}>and</Typography>
-            <Chip label="L" color="warning" /><Typography pl={1}>are in the word but the wrong spot</Typography>
-          </Box>
-          <Box pt={2} display="flex">
-            <Chip label="E" color="success" /><Typography px={1}>and</Typography>
-            <Chip label="0" color="success" /><Typography pl={1}>are in the word and the right spot</Typography>
+          <Box pt={2}>
+            <Typography align="center">One more try</Typography>
+            <Grid
+              container
+              columnSpacing={1}
+              rowSpacing={1}
+              columns={5}
+              justifyContent="center"
+            >
+              {closeExample.split('').map((c, index) => (
+                <Grid key={index} item>
+                  <SmartChip size="small" label={c} submitted exist={index < 4} exact={index < 4} />
+                </Grid>
+              ))}
+            </Grid>
+            <Typography align="center" mb={2}>So close! 💪</Typography>
+            <Typography align="center">Last try to finish the game</Typography>
+            <Grid
+              container
+              columnSpacing={1}
+              rowSpacing={1}
+              columns={5}
+              justifyContent="center"
+            >
+              {successExample.split('').map((c, index) => (
+                <Grid key={index} item>
+                  <SmartChip size="small" label={c} submitted exist={true} exact={true} />
+                </Grid>
+              ))}
+            </Grid>
+            <Typography align="center">Got it! 🏆</Typography>
           </Box>
         </Box>
       </Popover>

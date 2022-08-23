@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { InfoOutlined, Close } from '@mui/icons-material';
 
 import { dictionary } from '../data';
 import styles from '~/styles/index.css';
@@ -25,9 +25,8 @@ import styles from '~/styles/index.css';
  * TODO: 
  * 1. Fix Physical keyboard escape press on dialog show
  * 2. Show the word on game over
- * 3. Add a close button to the dialog
- * 4. Adjust the vibration
- * 5. Optimize keyboard on mobile
+ * 3. Adjust the vibration
+ * 4. Optimize keyboard on mobile
  */
 
 const name = 'WORDLE GAME';
@@ -114,6 +113,7 @@ export default function Index() {
    * Remove last character from current row
    */
   const onBackSpace = useCallback(() => {
+    window.navigator.vibrate(150);
     const currentBoardRow = board[currentGuess];
     currentBoardRow[currentBoardRow.filter((c) => c).length - 1] = null;
     setBoard((board) =>
@@ -137,6 +137,7 @@ export default function Index() {
    * 3. If current guess is the last row, check if it is the last row of the board
    */
   const onEnter = useCallback(() => {
+    window.navigator.vibrate(150);
     const currentBoardRow = board[currentGuess];
     if (!isWordInDictionary(currentBoardRow.join(''))) {
       setMessage('Word not found');
@@ -234,7 +235,6 @@ export default function Index() {
   }, []);
 
   const handlePhysicalKeyboardPress = useCallback(({ key }: KeyboardEvent) => {
-    console.log(key)
     if (key === 'Backspace') {
       onBackSpace();
     } else if (key === 'Enter') {
@@ -274,7 +274,7 @@ export default function Index() {
     <ThemeProvider theme={theme}>
       <Box alignSelf='flex-start' pl={2}>
         <IconButton aria-describedby={id} onClick={handleClick}>
-          <InfoOutlinedIcon />
+          <InfoOutlined />
         </IconButton>
       </Box>
       <Container maxWidth='xs' className='title'>
@@ -409,7 +409,12 @@ export default function Index() {
           horizontal: 'left',
         }}
       >
-        <Box p={4} sx={{ maxWidth: 400 }}>
+        <Box p={4} pt={0} sx={{ maxWidth: 400 }}>
+          <Box display="flex" justifyContent="flex-end" onClick={handleClose} position="sticky" top={0} sx={{ backgroundColor: "white" }} pt={2} pb={2}>
+            <IconButton>
+              <Close />
+            </IconButton>
+          </Box>
           <Typography variant='h6' mb={1}>How to play</Typography>
           <Typography pb={1}>
             You have to guess the hidden word in 6 tries and the color of the

@@ -23,10 +23,7 @@ import styles from '~/styles/index.css';
 
 /**
  * TODO: 
- * 1. Fix Physical keyboard escape press on dialog show
- * 2. Show the word on game over
- * 3. Adjust the vibration
- * 4. Optimize keyboard on mobile
+ * 1. Optimize keyboard on mobile
  */
 
 const name = 'WORDLE GAME';
@@ -383,7 +380,7 @@ export default function Index() {
           </Box>
         </Box>
       </Container>
-      <Dialog open={Boolean(message)} disableEscapeKeyDown={false}>
+      <Dialog open={Boolean(message)} onClose={!gameOver ? onContinue : restart}>
         <Box
           p={5}
           display='flex'
@@ -392,6 +389,7 @@ export default function Index() {
           justifyContent='center'
         >
           <Typography align='center'>{message}</Typography>
+          {gameOver && <Typography>The word was {todayWord}</Typography>}
           {gameOver || isWinner ? (
             <Button onClick={restart}>Restart</Button>
           ) : (
